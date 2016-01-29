@@ -4,6 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <application
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
@@ -18,6 +19,14 @@
         <meta-data
             android:name="xposedminversion"
             android:value="30"/>
+
+        <provider
+            android:name="edu.tsinghua.location.research.provider.LogProvider"
+            android:authorities="${applicationId}"
+            android:enabled="true"
+            android:exported="true"
+            tools:ignore="ExportedContentProvider">
+        </provider>
     </application>
 
 </manifest>
