@@ -29,7 +29,7 @@ import android.util.AttributeSet;
 /**
  * Created by mariotaku on 15/8/28.
  */
-public class UploadLogsPreferences extends Preference {
+public class UploadLogsPreferences extends Preference implements HotMobiConstants {
 
     public UploadLogsPreferences(Context context) {
         super(context);
@@ -46,8 +46,8 @@ public class UploadLogsPreferences extends Preference {
     @Override
     protected void onClick() {
         final Context context = getContext();
-        final SharedPreferences prefs = context.getSharedPreferences("spice_data_profiling", Context.MODE_PRIVATE);
-        prefs.edit().remove(HotMobiLogger.LAST_UPLOAD_TIME).apply();
+        final SharedPreferences prefs = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        prefs.edit().remove(KEY_LAST_UPLOAD_TIME).apply();
         AsyncTask.execute(new UploadLogsTask(context.getApplicationContext()));
     }
 }

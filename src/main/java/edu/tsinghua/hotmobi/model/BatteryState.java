@@ -23,71 +23,42 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
-import android.support.annotation.NonNull;
 
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
-
-import java.util.TimeZone;
-
-import edu.tsinghua.hotmobi.HotMobiLogger;
 
 /**
  * Created by mariotaku on 15/9/28.
  */
 @JsonObject
-public class BatteryRecord implements LogModel {
+public class BatteryState {
     @JsonField(name = "level")
     float level;
     @JsonField(name = "state")
     int state;
-    @JsonField(name = "timestamp")
-    long timestamp;
-    @JsonField(name = "time_offset")
-    long timeOffset;
 
-    public static void log(Context context) {
+    public static BatteryState create(Context context) {
         final Context app = context.getApplicationContext();
-        log(context, app.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED)));
+        return create(app.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED)));
     }
 
-    public static void log(Context context, Intent intent) {
-        if (intent == null) return;
+    public static BatteryState create(Intent intent) {
+        if (intent == null) return null;
         if (!intent.hasExtra(BatteryManager.EXTRA_LEVEL) || !intent.hasExtra(BatteryManager.EXTRA_SCALE) ||
-                !intent.hasExtra(BatteryManager.EXTRA_STATUS)) return;
-        final BatteryRecord record = new BatteryRecord();
+                !intent.hasExtra(BatteryManager.EXTRA_STATUS)) return null;
+        final BatteryState record = new BatteryState();
         record.setLevel(intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) / (float)
                 intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1));
         record.setState(intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1));
-        record.setTimestamp(System.currentTimeMillis());
-        record.setTimeOffset(TimeZone.getDefault().getRawOffset());
-        HotMobiLogger.getInstance(context).log(record, null);
+        return record;
     }
 
     @Override
     public String toString() {
-        return "BatteryRecord{" +
+        return "BatteryState{" +
                 "level=" + level +
                 ", state=" + state +
-                ", timestamp=" + timestamp +
-                ", timeOffset=" + timeOffset +
                 '}';
-    }
-
-    public long getTimeOffset() {
-        return timeOffset;
-    }
-
-    public void setTimeOffset(long timeOffset) {
-        this.timeOffset = timeOffset;
-    }
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
     }
 
     public float getLevel() {
@@ -106,9 +77,4 @@ public class BatteryRecord implements LogModel {
         this.state = state;
     }
 
-    @NonNull
-    @Override
-    public String getLogFileName() {
-        return "battery";
-    }
 }

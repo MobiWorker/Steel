@@ -37,19 +37,16 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import edu.tsinghua.hotmobi.model.LogModel;
+import edu.tsinghua.location.research.Constants;
 import edu.tsinghua.location.research.module.BuildConfig;
 
 /**
  * Created by mariotaku on 15/8/10.
  */
-public class HotMobiLogger implements HotMobiConstants {
+public class HotMobiLogger implements HotMobiConstants, Constants {
 
     public static final long ACCOUNT_ID_NOT_NEEDED = -1;
-
-    public static final String LOGTAG = "HotMobiLogger";
     public static final long UPLOAD_INTERVAL_MILLIS = TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS);
-    public static final String LAST_UPLOAD_TIME = "last_upload_time";
-    public static final String FALLBACK_CACHED_LOCATION = "fallback_cached_location";
     final static SimpleDateFormat DATE_FORMAT;
     private static HotMobiLogger sInstance;
 
@@ -110,10 +107,10 @@ public class HotMobiLogger implements HotMobiConstants {
 
     public static long getLastUploadTime(final Context context) {
         final SharedPreferences prefs = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-        return prefs.getLong(LAST_UPLOAD_TIME, -1);
+        return prefs.getLong(KEY_LAST_UPLOAD_TIME, -1);
     }
 
-    public static boolean log(final String msg) {
+    public static boolean printLog(final String msg) {
         if (BuildConfig.DEBUG) {
             final StackTraceElement ste = new Throwable().fillInStackTrace().getStackTrace()[1];
             final String fullName = ste.getClassName();
@@ -127,10 +124,6 @@ public class HotMobiLogger implements HotMobiConstants {
 
     public <T extends LogModel> void log(long accountId, final T event, final PreProcessing<T> preProcessing) {
         mExecutor.execute(new WriteLogTask<>(mApplication, accountId, event, preProcessing));
-    }
-
-    public <T extends LogModel> void log(long accountId, final T event) {
-        log(accountId, event, null);
     }
 
     public <T extends LogModel> void log(final T event) {

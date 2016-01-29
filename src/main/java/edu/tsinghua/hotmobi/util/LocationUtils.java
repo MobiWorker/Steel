@@ -5,13 +5,13 @@ import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationManager;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.bluelinelabs.logansquare.LoganSquare;
 
 import java.io.IOException;
 
 import edu.tsinghua.hotmobi.HotMobiConstants;
-import edu.tsinghua.hotmobi.HotMobiLogger;
 import edu.tsinghua.hotmobi.model.LatLng;
 
 /**
@@ -26,7 +26,7 @@ public class LocationUtils implements HotMobiConstants {
         final LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         final SharedPreferences prefs = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         try {
-            prefs.edit().putString(HotMobiLogger.FALLBACK_CACHED_LOCATION, LoganSquare.serialize(latLng)).apply();
+            prefs.edit().putString(FALLBACK_CACHED_LOCATION, LoganSquare.serialize(latLng)).apply();
         } catch (IOException e) {
             // Ignore
         }
@@ -36,8 +36,10 @@ public class LocationUtils implements HotMobiConstants {
     private static LatLng getFallbackCachedLocation(Context context) {
         final SharedPreferences prefs = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         try {
-            return LoganSquare.parse(prefs.getString(HotMobiLogger.FALLBACK_CACHED_LOCATION, null), LatLng.class);
-        } catch (IOException e) {
+            final String s = prefs.getString(FALLBACK_CACHED_LOCATION, null);
+            if (TextUtils.isEmpty(s)) return null;
+            return LoganSquare.parse(s, LatLng.class);
+        } catch (Exception e) {
             return null;
         }
     }

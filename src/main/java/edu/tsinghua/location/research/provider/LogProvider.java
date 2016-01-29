@@ -3,6 +3,7 @@ package edu.tsinghua.location.research.provider;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Binder;
@@ -11,8 +12,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import java.util.Arrays;
-
+import edu.tsinghua.hotmobi.HotMobiLogger;
+import edu.tsinghua.hotmobi.model.BatteryState;
+import edu.tsinghua.hotmobi.model.RequestLocationUpdateEvent;
 import edu.tsinghua.location.research.Constants;
 
 public class LogProvider extends ContentProvider implements Constants {
@@ -36,11 +38,20 @@ public class LogProvider extends ContentProvider implements Constants {
     @Nullable
     @Override
     public Bundle call(@NonNull String method, String arg, Bundle extras) {
-        final Context context = getContext();
-        if (context == null) return null;
-        final int uid = Binder.getCallingUid();
-        Log.d(LOGTAG, "Remote method " + method + " called, calling app + " +
-                Arrays.toString(context.getPackageManager().getPackagesForUid(uid)));
+        try {
+            final Context context = getContext();
+            if (context == null) return null;
+            final PackageManager pm = context.getPackageManager();
+            final int uid = Binder.getCallingUid();
+            RequestLocationUpdateEvent event = new RequestLocationUpdateEvent();
+            event.markStart(context);
+            event.setCallingPackages(pm.getPackagesForUid(uid));
+            event.setBatteryState(BatteryState.create(context));
+            event.markEnd();
+            HotMobiLogger.getInstance(context).log(event);
+        } catch (Throwable e) {
+            Log.w(LOGTAG, e);
+        }
         return null;
     }
 

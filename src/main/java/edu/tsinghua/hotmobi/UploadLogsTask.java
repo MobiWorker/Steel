@@ -59,18 +59,18 @@ public class UploadLogsTask implements Runnable {
 
         final SharedPreferences prefs = context.getSharedPreferences("spice_data_profiling", Context.MODE_PRIVATE);
 
-        if (prefs.contains(HotMobiLogger.LAST_UPLOAD_TIME)) {
-            final long lastUpload = prefs.getLong(HotMobiLogger.LAST_UPLOAD_TIME, System.currentTimeMillis());
+        if (prefs.contains(HotMobiConstants.KEY_LAST_UPLOAD_TIME)) {
+            final long lastUpload = prefs.getLong(HotMobiConstants.KEY_LAST_UPLOAD_TIME, System.currentTimeMillis());
             final double deltaDays = (System.currentTimeMillis() - lastUpload) /
                     (double) HotMobiLogger.UPLOAD_INTERVAL_MILLIS;
             if (deltaDays < 1) {
-                HotMobiLogger.log("Last uploaded was conducted in 1 day ago.");
+                HotMobiLogger.printLog("Last uploaded was conducted in 1 day ago.");
                 return;
             }
         }
 
         if (uploadLogs()) {
-            prefs.edit().putLong(HotMobiLogger.LAST_UPLOAD_TIME, System.currentTimeMillis()).apply();
+            prefs.edit().putLong(HotMobiConstants.KEY_LAST_UPLOAD_TIME, System.currentTimeMillis()).apply();
         }
     }
 
@@ -92,7 +92,7 @@ public class UploadLogsTask implements Runnable {
                 File logFile = (File) logFileObj;
                 try {
                     final Request.Builder builder = new Request.Builder();
-                    builder.url("http://www.dnext.xyz/usage/upload");
+                    builder.url("http://www.dnext.xyz/usage/locresearch_upload");
                     builder.header("X-HotMobi-UUID", uuid);
                     builder.header("X-HotMobi-Date", dayLogsDir.getName());
                     builder.header("X-HotMobi-FileName", logFile.getName());

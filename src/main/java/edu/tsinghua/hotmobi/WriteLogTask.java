@@ -20,12 +20,10 @@
 package edu.tsinghua.hotmobi;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.bluelinelabs.logansquare.LoganSquare;
-
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -68,9 +66,6 @@ public class WriteLogTask<T extends LogModel> implements Runnable, HotMobiConsta
 
     @Override
     public void run() {
-        final SharedPreferences prefs = context.getSharedPreferences(SHARED_PREFERENCES_NAME,
-                Context.MODE_PRIVATE);
-        if (!prefs.getBoolean(KEY_USAGE_STATISTICS, false)) return;
         RandomAccessFile raf = null;
         FileChannel fc = null;
         try {
