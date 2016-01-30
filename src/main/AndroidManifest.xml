@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
     <application
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
@@ -25,8 +26,13 @@
             android:authorities="${applicationId}"
             android:enabled="true"
             android:exported="true"
-            tools:ignore="ExportedContentProvider">
-        </provider>
+            tools:ignore="ExportedContentProvider"/>
+
+        <receiver android:name="edu.tsinghua.location.research.NetworkReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
