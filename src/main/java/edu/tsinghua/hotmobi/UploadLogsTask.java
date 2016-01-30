@@ -23,8 +23,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
@@ -83,11 +81,13 @@ public class UploadLogsTask implements Runnable {
                 return !filename.equalsIgnoreCase(todayDir);
             }
         };
-        for (Object dayLogsDirObj : ArrayUtils.nullToEmpty(logsDir.listFiles(filter))) {
-            final File dayLogsDir = (File) dayLogsDirObj;
+        File[] dayLogsDirs = logsDir.listFiles(filter);
+        if (dayLogsDirs == null) return false;
+        for (File dayLogsDir : dayLogsDirs) {
+            File[] logFiles = dayLogsDir.listFiles();
+            if (logFiles == null) continue;
             boolean succeeded = true;
-            for (Object logFileObj : ArrayUtils.nullToEmpty(dayLogsDir.listFiles())) {
-                File logFile = (File) logFileObj;
+            for (File logFile : logFiles) {
                 OutputStream os = null;
                 InputStream is = null;
                 try {

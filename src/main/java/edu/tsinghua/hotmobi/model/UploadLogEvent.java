@@ -6,8 +6,6 @@ import android.support.annotation.NonNull;
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.io.File;
 import java.net.HttpURLConnection;
 import java.util.HashMap;
@@ -19,6 +17,7 @@ import java.util.Map;
  */
 @JsonObject
 public class UploadLogEvent extends BaseEvent {
+    public static final String X_DNEXT_PREFIX = "X-Dnext";
     @JsonField(name = "file_name")
     String fileName;
     @JsonField(name = "file_length")
@@ -55,7 +54,7 @@ public class UploadLogEvent extends BaseEvent {
         final Map<String, List<String>> headers = response.getHeaderFields();
         for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
             final String name = entry.getKey();
-            if (StringUtils.startsWithIgnoreCase(name, "X-Dnext")) {
+            if (name.regionMatches(true, 0, X_DNEXT_PREFIX, 0, X_DNEXT_PREFIX.length())) {
                 for (String value : entry.getValue()) {
                     extraHeaders.put(name, value);
                 }
