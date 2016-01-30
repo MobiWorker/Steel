@@ -23,21 +23,21 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
-
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Date;
 import java.util.Locale;
 
 import edu.tsinghua.hotmobi.model.UploadLogEvent;
+import edu.tsinghua.hotmobi.util.IOUtils;
 import edu.tsinghua.location.research.module.BuildConfig;
 
 /**
@@ -47,17 +47,15 @@ import edu.tsinghua.location.research.module.BuildConfig;
 public class UploadLogsTask implements Runnable {
 
     private final Context context;
-    private final OkHttpClient client;
 
     public UploadLogsTask(Context context) {
         this.context = context;
-        this.client = new OkHttpClient();
     }
 
     @Override
     public void run() {
 
-        final SharedPreferences prefs = context.getSharedPreferences("spice_data_profiling", Context.MODE_PRIVATE);
+        final SharedPreferences prefs = context.getSharedPreferences(HotMobiConstants.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
 
         if (prefs.contains(HotMobiConstants.KEY_LAST_UPLOAD_TIME)) {
             final long lastUpload = prefs.getLong(HotMobiConstants.KEY_LAST_UPLOAD_TIME, System.currentTimeMillis());
@@ -90,20 +88,25 @@ public class UploadLogsTask implements Runnable {
             boolean succeeded = true;
             for (Object logFileObj : ArrayUtils.nullToEmpty(dayLogsDir.listFiles())) {
                 File logFile = (File) logFileObj;
+                OutputStream os = null;
+                InputStream is = null;
                 try {
-                    final Request.Builder builder = new Request.Builder();
-                    builder.url("http://www.dnext.xyz/usage/locresearch_upload");
-                    builder.header("X-HotMobi-UUID", uuid);
-                    builder.header("X-HotMobi-Date", dayLogsDir.getName());
-                    builder.header("X-HotMobi-FileName", logFile.getName());
-                    builder.header("User-Agent", String.format(Locale.ROOT,
+                    final UploadLogEvent uploadLogEvent = UploadLogEvent.create(context, logFile);
+                    HttpURLConnection conn = (HttpURLConnection) new URL("http://www.dnext.xyz/usage/locresearch_upload").openConnection();
+                    conn.setRequestProperty("X-HotMobi-UUID", uuid);
+                    conn.setRequestProperty("X-HotMobi-Date", dayLogsDir.getName());
+                    conn.setRequestProperty("X-HotMobi-FileName", logFile.getName());
+                    conn.setRequestProperty("User-Agent", String.format(Locale.ROOT,
                             "HotMobi (LocationUpdateListener %s %d)", BuildConfig.VERSION_NAME,
                             BuildConfig.VERSION_CODE));
-                    builder.method("POST", RequestBody.create(MediaType.parse("text/plain"), logFile));
-                    final UploadLogEvent uploadLogEvent = UploadLogEvent.create(context, logFile);
-                    final Response response = client.newCall(builder.build()).execute();
-                    if (response.isSuccessful()) {
-                        uploadLogEvent.finish(response);
+                    conn.setRequestMethod("POST");
+                    conn.setDoOutput(true);
+                    os = conn.getOutputStream();
+                    is = new FileInputStream(logFile);
+                    IOUtils.copyStream(is, os);
+                    final int responseCode = conn.getResponseCode();
+                    if (responseCode >= 200 && responseCode < 300) {
+                        uploadLogEvent.finish(conn);
                         if (!uploadLogEvent.shouldSkip()) {
                             HotMobiLogger.getInstance(context).log(uploadLogEvent);
                         }
@@ -113,6 +116,9 @@ public class UploadLogsTask implements Runnable {
                     Log.w(HotMobiLogger.LOGTAG, e);
                     succeeded = false;
                     hasErrors = true;
+                } finally {
+                    IOUtils.closeSilently(is);
+                    IOUtils.closeSilently(os);
                 }
             }
             if (succeeded) {

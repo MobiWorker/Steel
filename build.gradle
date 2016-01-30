@@ -44,7 +44,6 @@ android {
 dependencies {
     apt 'com.bluelinelabs:logansquare-compiler:1.3.4'
     compile 'com.bluelinelabs:logansquare:1.3.4'
-    compile 'com.squareup.okhttp:okhttp:2.7.0'
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'com.android.support:support-annotations:23.1.1'
     provided files('XposedBridgeApi-20150213.jar')

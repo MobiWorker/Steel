@@ -5,13 +5,13 @@ import android.support.annotation.NonNull;
 
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
-import com.squareup.okhttp.Headers;
-import com.squareup.okhttp.Response;
 
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
+import java.net.HttpURLConnection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -50,13 +50,15 @@ public class UploadLogEvent extends BaseEvent {
         this.extraHeaders = extraHeaders;
     }
 
-    public void finish(Response response) {
+    public void finish(HttpURLConnection response) {
         HashMap<String, String> extraHeaders = new HashMap<>();
-        final Headers headers = response.headers();
-        for (int i = 0, j = headers.size(); i < j; i++) {
-            final String name = headers.name(i);
+        final Map<String, List<String>> headers = response.getHeaderFields();
+        for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
+            final String name = entry.getKey();
             if (StringUtils.startsWithIgnoreCase(name, "X-Dnext")) {
-                extraHeaders.put(name, headers.value(i));
+                for (String value : entry.getValue()) {
+                    extraHeaders.put(name, value);
+                }
             }
         }
         setExtraHeaders(extraHeaders);
