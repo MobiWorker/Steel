@@ -49,6 +49,10 @@ public abstract class BaseEvent implements LogModel {
 
     @JsonField(name = "location")
     LatLng location;
+    @JsonField(name = "calling_packages")
+    String[] callingPackages;
+    @JsonField(name = "battery_state")
+    BatteryState batteryState;
 
     public BaseEvent() {
     }
@@ -77,6 +81,22 @@ public abstract class BaseEvent implements LogModel {
 
     public void markEnd() {
         setEndTime(System.currentTimeMillis());
+    }
+
+    public BatteryState getBatteryState() {
+        return batteryState;
+    }
+
+    public void setBatteryState(BatteryState batteryState) {
+        this.batteryState = batteryState;
+    }
+
+    public String[] getCallingPackages() {
+        return callingPackages;
+    }
+
+    public void setCallingPackages(String[] callingPackages) {
+        this.callingPackages = callingPackages;
     }
 
     @Override

@@ -8,16 +8,16 @@ import com.bluelinelabs.logansquare.annotation.JsonObject;
  * Created by mariotaku on 16/1/29.
  */
 @JsonObject
-public class RequestLocationUpdateEvent extends BaseEvent {
+public class PostedNotificationEvent extends BaseEvent {
 
     @Override
     public String toString() {
-        return "RequestLocationUpdateEvent{} " + super.toString();
+        return "PostedNotificationEvent{} " + super.toString();
     }
 
     @NonNull
     @Override
     public String getLogFileName() {
-        return "request_location_update";
+        return "posted_notification";
     }
 }
