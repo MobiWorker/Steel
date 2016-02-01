@@ -54,6 +54,7 @@ public class UploadLogEvent extends BaseEvent {
         final Map<String, List<String>> headers = response.getHeaderFields();
         for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
             final String name = entry.getKey();
+            if (name == null) continue;
             if (name.regionMatches(true, 0, X_DNEXT_PREFIX, 0, X_DNEXT_PREFIX.length())) {
                 for (String value : entry.getValue()) {
                     extraHeaders.put(name, value);

@@ -23,6 +23,13 @@
             android:name="xposedminversion"
             android:value="30"/>
 
+        <activity android:name="edu.tsinghua.location.research.SettingsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="de.robv.android.xposed.category.MODULE_SETTINGS"/>
+            </intent-filter>
+        </activity>
+
         <provider
             android:name="edu.tsinghua.location.research.provider.LogProvider"
             android:authorities="${applicationId}"
