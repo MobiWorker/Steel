@@ -13,7 +13,6 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import edu.tsinghua.hotmobi.HotMobiLogger;
-import edu.tsinghua.hotmobi.model.BaseEvent;
 import edu.tsinghua.hotmobi.model.BatteryState;
 import edu.tsinghua.hotmobi.model.PostedNotificationEvent;
 import edu.tsinghua.hotmobi.model.RequestLocationUpdateEvent;
@@ -35,25 +34,38 @@ public class LogProvider extends ContentProvider implements Constants {
             if (context == null) return null;
             final PackageManager pm = context.getPackageManager();
             final int uid = Binder.getCallingUid();
-            BaseEvent event;
+            final String[] packagesForUid = pm.getPackagesForUid(uid);
             switch (method) {
                 case NOTIFICATION_POSTED: {
-                    event = new PostedNotificationEvent();
+                    final PostedNotificationEvent event = new PostedNotificationEvent();
+                    event.markStart(context);
+                    if (contains(packagesForUid, arg)) {
+                        event.setCallingPackages(new String[]{arg});
+                    } else {
+                        event.setCallingPackages(packagesForUid);
+                    }
+                    event.setBatteryState(BatteryState.create(context));
+                    event.markEnd();
+                    HotMobiLogger.getInstance(context).log(event);
                     break;
                 }
                 case REQUESTED_LOCATION_UPDATE: {
-                    event = new RequestLocationUpdateEvent();
+                    final RequestLocationUpdateEvent event = new RequestLocationUpdateEvent();
+                    event.markStart(context);
+                    if (contains(packagesForUid, arg)) {
+                        event.setCallingPackages(new String[]{arg});
+                    } else {
+                        event.setCallingPackages(packagesForUid);
+                    }
+                    event.setBatteryState(BatteryState.create(context));
+                    event.markEnd();
+                    HotMobiLogger.getInstance(context).log(event);
                     break;
                 }
                 default: {
                     throw new UnsupportedOperationException(method);
                 }
             }
-            event.markStart(context);
-            event.setCallingPackages(pm.getPackagesForUid(uid));
-            event.setBatteryState(BatteryState.create(context));
-            event.markEnd();
-            HotMobiLogger.getInstance(context).log(event);
         } catch (Throwable e) {
             Log.w(LOGTAG, e);
         }
@@ -91,5 +103,16 @@ public class LogProvider extends ContentProvider implements Constants {
     public int update(@NonNull Uri uri, ContentValues values, String selection,
                       String[] selectionArgs) {
         throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    static boolean contains(String[] array, String item) {
+        for (String s : array) {
+            if (item != null && item.equals(s)) {
+                return true;
+            } else if (s == null) {
+                return true;
+            }
+        }
+        return false;
     }
 }

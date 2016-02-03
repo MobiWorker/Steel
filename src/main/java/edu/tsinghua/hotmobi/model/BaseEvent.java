@@ -24,6 +24,7 @@ import android.content.Context;
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
+import java.util.Arrays;
 import java.util.TimeZone;
 
 import edu.tsinghua.hotmobi.util.LocationUtils;
@@ -107,6 +108,8 @@ public abstract class BaseEvent implements LogModel {
                 ", endTime=" + endTime +
                 ", timeOffset=" + timeOffset +
                 ", location=" + location +
+                ", callingPackages=" + Arrays.toString(callingPackages) +
+                ", batteryState=" + batteryState +
                 '}';
     }
 
