@@ -13,3 +13,5 @@ We won't log any personal information, containing device ID, phone number, so al
 
 
 **Please take part in our research, we need your help!**
+
+For any questions about this research project, please contact Chao Wu `cwu12@mails.tsinghua.edu.cn`
