@@ -40,7 +40,7 @@ before_install:
 
 before_script:
   # Extracts build configs into source tree
-  - tar zxf travis/configs/steel_private_config.tar.gz
+  - tar zxf travis/configs/steel_private_config.tgz
 
 script: ./gradlew build --no-daemon --stacktrace
 
