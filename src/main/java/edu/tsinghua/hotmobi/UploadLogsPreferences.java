@@ -25,8 +25,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.Preference;
 import android.util.AttributeSet;
+import android.widget.Toast;
 
 import edu.tsinghua.location.research.UploadLogsService;
+import edu.tsinghua.location.research.module.R;
 
 /**
  * Created by mariotaku on 15/8/28.
@@ -51,5 +53,6 @@ public class UploadLogsPreferences extends Preference implements HotMobiConstant
         final SharedPreferences prefs = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         prefs.edit().remove(KEY_LAST_UPLOAD_TIME).apply();
         context.startService(new Intent(context, UploadLogsService.class));
+        Toast.makeText(context, R.string.uploading_started, Toast.LENGTH_SHORT).show();
     }
 }
