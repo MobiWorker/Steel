@@ -21,11 +21,11 @@ android {
     buildToolsVersion "23.0.2"
 
     defaultConfig {
-        applicationId "edu.tsinghua.location.research.module"
+        applicationId "edu.tsinghua.research.steel"
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 5
-        versionName "1.4"
+        versionCode 6
+        versionName "1.5"
     }
 
     lintOptions {
