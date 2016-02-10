@@ -5,15 +5,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.support.v4.net.ConnectivityManagerCompat;
+import android.util.Log;
 
 import edu.tsinghua.hotmobi.HotMobiLogger;
+import edu.tsinghua.location.research.module.BuildConfig;
 import edu.tsinghua.location.research.util.Utils;
 
-public class NetworkReceiver extends BroadcastReceiver {
+public class UploadLogsReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (!ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())) return;
+        if (BuildConfig.DEBUG) {
+            Log.d(HotMobiLogger.LOGTAG, "Received broadcast");
+        }
         final Context appContext = context.getApplicationContext();
         final ConnectivityManager cm = (ConnectivityManager) appContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         final boolean isMetered = ConnectivityManagerCompat.isActiveNetworkMetered(cm);

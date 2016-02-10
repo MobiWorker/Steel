@@ -39,9 +39,10 @@
 
         <service android:name="edu.tsinghua.location.research.UploadLogsService"/>
 
-        <receiver android:name="edu.tsinghua.location.research.NetworkReceiver">
+        <receiver android:name="edu.tsinghua.location.research.UploadLogsReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED"/>
             </intent-filter>
         </receiver>
     </application>
