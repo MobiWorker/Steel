@@ -21,10 +21,12 @@ package edu.tsinghua.hotmobi;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.preference.Preference;
 import android.util.AttributeSet;
+
+import edu.tsinghua.location.research.UploadLogsService;
 
 /**
  * Created by mariotaku on 15/8/28.
@@ -48,6 +50,6 @@ public class UploadLogsPreferences extends Preference implements HotMobiConstant
         final Context context = getContext();
         final SharedPreferences prefs = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         prefs.edit().remove(KEY_LAST_UPLOAD_TIME).apply();
-        AsyncTask.execute(new UploadLogsTask(context.getApplicationContext()));
+        context.startService(new Intent(context, UploadLogsService.class));
     }
 }

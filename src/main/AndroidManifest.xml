@@ -32,10 +32,12 @@
 
         <provider
             android:name="edu.tsinghua.location.research.provider.LogProvider"
-            android:authorities="${applicationId}"
+            android:authorities="edu.tsinghua.location.research.module"
             android:enabled="true"
             android:exported="true"
             tools:ignore="ExportedContentProvider"/>
+
+        <service android:name="edu.tsinghua.location.research.UploadLogsService"/>
 
         <receiver android:name="edu.tsinghua.location.research.NetworkReceiver">
             <intent-filter>
